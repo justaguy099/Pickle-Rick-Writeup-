@@ -13,8 +13,11 @@ nmap -A -sV -oA nmap_result 10.10.205.
 ```
 ![NMAP Resulst](images/1-1.png "NMAP") 
 Breakdown of each of this options:
+
 -A : extensive scan on the machine
+
 -sV : enable version detection of each of the ports
+
 -oA : enable the output to be saved locally with the name "nmap_result"
 
 
@@ -51,8 +54,11 @@ The options that i used for dirsearch is:
 dirsearch -u 10.10.9.36 -e php,html,js
 ```
 A breakdown of this command is:
+
 -u : is the url of the target
+
 -e : will search for the desired extensions
+
 ![Dirsearch](images/4-1.png)
 It looks like there is a login page and a few other pages within this
 server. Let's first take a look at the robots.txt page to see if there's
@@ -195,6 +201,7 @@ server. Breakdown of this command:
 
 - sudo: nc needs to open up a port in the computer, for that it needs
 the privilege of the user.
+
 - lvnp: is a combination of option -l to listen for incoming connection,
 -n to not perform domain name resolution, -v for verbose output,
 and lastly -p to tell what port should nc listen to.
