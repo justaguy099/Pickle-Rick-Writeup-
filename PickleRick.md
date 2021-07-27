@@ -1,5 +1,7 @@
 # Pickle-Rick-Writeup-
-A writeup for Pickle Rick CTF room in Tryhackme https://tryhackme.com/room/picklerick. This is my first ever writeup, critics and suggestions are very welcome
+A writeup for Pickle Rick CTF room in Tryhackme https://tryhackme.com/room/picklerick. This is my first ever writeup, critics and suggestions are very welcome.
+
+P.S the IP that is used in this writeup is different from each person.
 
 # Scanning the target
 
@@ -9,6 +11,7 @@ ports that is open using nmap. The options that i used for nmap are:
 ```
 nmap -A -sV -oA nmap_result 10.10.205.
 ```
+![NMAP Resulst](images/1-1.png "NMAP") 
 Breakdown of each of this options:
 -A : extensive scan on the machine
 -sV : enable version detection of each of the ports
@@ -21,13 +24,14 @@ respectively. Okay now that we have the ports, what should we do?.
 Well since we didn't have any credentials to access the ssh, let's
 start with the webserver first.
 
-# First Ingridient
+# First Ingredient
 
 ## The webserver
-
+![Webserver](images/3-1.png) 
 
 Not alot to see or do in this page, but we can try to see its source
-code if there's anything we can find
+code if there's anything we can find.
+![Webserver](images/3-2.png)
 
 It looks like we found a username commented in the HTML code. If
 there's a username then that means there's login page somewhere
@@ -49,17 +53,19 @@ dirsearch -u 10.10.9.36 -e php,html,js
 A breakdown of this command is:
 -u : is the url of the target
 -e : will search for the desired extensions
-
+![Dirsearch](images/4-1.png)
 It looks like there is a login page and a few other pages within this
 server. Let's first take a look at the robots.txt page to see if there's
 any other page hidden within the server that we might miss.
 
+![Dirsearch](images/4-2.png)
 
-Nope, it looks like one of rick's personal catchphrase that he always
+It looks like one of rick's personal catchphrase that he always
 said in the series. But it might mean something, so lets hold on to it.
 Next let's try the assets page to find any other hidden file or
 information that we can use later on.
 
+![Dirsearch](images/4-3.png)
 Nothing of the sorts, all of the files is just an image file and a couple
 of css to use for the page. Clicking the parent directory leads us
 back to the main page.
@@ -68,22 +74,22 @@ back to the main page.
 
 After a bit of tour, let's access the login page.
 
-
+![Dashboard](images/5-1.png)
 We know the username is “R1ckRul3s” based on what we found in
 the main page's source code, lets try to input “Wubbalubbadubdub”
 that we found in the robots.txt as the password.
 
+![Dashboard](images/5-2.png)
 correct, now we can look around Rick's dashboard to find the
 required ingridients to turn him back. Before moving to other pages
-to see what's up, let's input a command “ls -al” to see if there's any
+to see what's up, let's input a command “ls -al” to see if there's any peculiar file here.
 
-
-peculiar file here.
-
+![Dashboard](images/5-3.png)
 and it looks like there is, and what appears to be one of the
 ingridient that we need. By replacing the “portal.php” in the url with
 the file name, and we get the first ingridient.
 
+![Dashboard](images/5-4.png)
 # Second Ingridient
 
 ## Knowing the current location of the system
@@ -93,15 +99,15 @@ know where is our current location in the system, since we already
 know that the command panel executes linux command, we can
 input 'pwd' to know the current directory.
 
-When execute.
-
-
+![Dashboard](images/7-2.png)
 Now we know where we are in the system. Since we're in /var, lets
 look at /home directory to see what's in it using “ls” command:
 
 ```
 ls/ home /
 ```
+![Dashboard](images/7-3.png)
+
 There are two directory in home, one is for rick and the other is
 ubuntu. let's first search rick directory to see if he's putting the
 other ingridients there, the command is "ls -la" to list all the files
@@ -111,18 +117,22 @@ that may be hidden to us.
 ls -al \home\rick
 ```
 
+![Dashboard](images/7-4.png)
+
 There it is, the file containing the second ingridient. Let's use “cat”
 to look at the file.
 
 ```
 cat "/home/rick/second ingredients"
 ```
+![Dashboard](images/7-5.png)
 nope, looks like the “cat” command is disabled here, how about if
 we use ‘less’ to see?.
 
 ```
 less "/home/rick/second ingredients"
 ```
+![Dashboard](images/7-6.png)
 
 There we go.
 
@@ -142,21 +152,22 @@ this, execute this command:
 ```
 sudo -l
 ```
-
+![Root](images/10-1.png)
 Based on this output, it means that we are able to freely execute
 any command with the highest privileged without the system
 prompting us for password, this means we know the way to access
 the root directory. Let's list all the files in root with ‘ls’ command:
 
 ```
-sudols/ root
+sudo ls/ root
 ```
+![Root](images/10-2.png)
 now that we know the name of the file, open it with:
 
 ```
-sudoless/ root / 3rd.txt
+sudo less/ root / 3rd.txt
 ```
-
+![Root](images/10-3.png)
 Congratuations. Rick is back into human again.
 
 # Alternate Method
@@ -189,6 +200,8 @@ the privilege of the user.
 and lastly -p to tell what port should nc listen to.
 
 After executing the command, our console will look like this.
+
+![Reverse](images/12-1.png)
 
 We can input whatever command that we execute in the server, and
 we can use “cat” command this way, however. The connection at
